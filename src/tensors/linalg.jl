@@ -59,7 +59,7 @@ function one!(t::AbstractTensorMap)
     domain(t) == codomain(t) ||
         throw(SectorMismatch("no identity if domain and codomain are different"))
     for (c, b) in blocks(t)
-        MatrixAlgebra.one!(b)
+        one!(b)
     end
     return t
 end
@@ -106,7 +106,7 @@ function isomorphism!(t::AbstractTensorMap)
     domain(t) ≅ codomain(t) ||
         throw(SpaceMismatch(lazy"domain and codomain are not isomorphic: $(space(t))"))
     for (_, b) in blocks(t)
-        MatrixAlgebra.one!(b)
+        one!(b)
     end
     return t
 end
@@ -155,7 +155,7 @@ function isometry!(t::AbstractTensorMap)
     domain(t) ≾ codomain(t) ||
         throw(SpaceMismatch(lazy"domain and codomain are not isometrically embeddable: $(space(t))"))
     for (_, b) in blocks(t)
-        MatrixAlgebra.one!(b)
+        one!(b)
     end
     return t
 end
@@ -179,7 +179,6 @@ end
 
 # Diagonal tensors
 # ----------------
-# TODO: consider adding a specialised DiagonalTensorMap type
 function LinearAlgebra.diag(t::AbstractTensorMap)
     return SectorDict(c => LinearAlgebra.diag(b) for (c, b) in blocks(t))
 end
@@ -288,12 +287,19 @@ end
 
 _default_rtol(t) = eps(real(float(scalartype(t)))) * min(dim(domain(t)), dim(codomain(t)))
 
-function LinearAlgebra.rank(t::AbstractTensorMap; atol::Real=0,
-                            rtol::Real=atol > 0 ? 0 : _default_rtol(t))
-    dim(t) == 0 && return 0
+function LinearAlgebra.rank(t::AbstractTensorMap;
+                            atol::Real=0, rtol::Real=atol > 0 ? 0 : _default_rtol(t))
+    r = dim(one(sectortype(t))) * 0
+    dim(t) == 0 && return r
     S = LinearAlgebra.svdvals(t)
     tol = max(atol, rtol * maximum(first, values(S)))
-    return sum(cs -> dim(cs[1]) * count(>(tol), cs[2]), S)
+    for (c, b) in S
+        if !isempty(b)
+            r += dim(c) * count(>(tol), b)
+        end
+    end
+    return r
+    # return sum(((c, b),) -> dim(c) * count(>(tol), b), S; init)
 end
 
 function LinearAlgebra.cond(t::AbstractTensorMap, p::Real=2)
@@ -377,7 +383,7 @@ function Base.inv(t::AbstractTensorMap)
     T = float(scalartype(t))
     tinv = similar(t, T, dom ← cod)
     for (c, b) in blocks(t)
-        binv = MatrixAlgebra.one!(block(tinv, c))
+        binv = one!(block(tinv, c))
         ldiv!(lu(b), binv)
     end
     return tinv
@@ -449,11 +455,11 @@ for f in (:cos, :sin, :tan, :cot, :cosh, :sinh, :tanh, :coth, :atan, :acot, :asi
         tf = similar(t, T)
         if T <: Real
             for (c, b) in blocks(t)
-                copy!(block(tf, c), real(MatrixAlgebra.$f(b)))
+                copy!(block(tf, c), real(MatrixAlgebraKit.$f(b)))
             end
         else
             for (c, b) in blocks(t)
-                copy!(block(tf, c), MatrixAlgebra.$f(b))
+                copy!(block(tf, c), MatrixAlgebraKit.$f(b))
             end
         end
         return tf
