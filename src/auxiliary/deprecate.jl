@@ -56,7 +56,8 @@ Base.@deprecate insertunit(P::ProductSpace, args...; kwargs...) insertleftunit(a
 # truncations
 const TruncationScheme = MatrixAlgebraKit.TruncationStrategy
 @deprecate truncdim(d::Int) truncrank(d)
-@deprecate truncbelow(ϵ::Real) trunctol(ϵ)
+@deprecate truncbelow(ϵ::Real) trunctol(; atol = ϵ)
+@deprecate truncerr(ϵ::Real) truncerror(ϵ)
 
 # factorizations
 # --------------
@@ -131,7 +132,7 @@ function rightnull(t::AbstractTensorMap, p::Index2Tuple; kwargs...)
     return rightnull!(permutedcopy_oftype(t, factorisation_scalartype(rightnull, t), p); kwargs...)
 end
 function leftnull!(t::AbstractTensorMap; kwargs...)
-    Base.depwarn("`left_null!` is deprecated, use `left_null!` instead", :leftnull!)
+    Base.depwarn("`leftnull!` is deprecated, use `left_null!` instead", :leftnull!)
     haskey(kwargs, :alg) || return left_null!(t; kwargs...)
     alg = kwargs[:alg]
     kind = _kindof(alg)
