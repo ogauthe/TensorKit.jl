@@ -86,13 +86,13 @@ The following methods act specifically on `ElementarySpace` spaces:
 
 ```@docs
 isdual
-dual
+dual(::VectorSpace)
 conj
 flip
 ⊕
 ⊖
-zero(::ElementarySpace)
-oneunit
+zerospace
+unitspace
 supremum
 infimum
 ```

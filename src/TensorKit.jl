@@ -7,16 +7,17 @@ module TensorKit
 
 # Exports
 #---------
-# Types:
+# Reexport common sector types:
 export Sector, AbstractIrrep, Irrep
-export FusionStyle, UniqueFusion, MultipleFusion, MultiplicityFreeFusion,
-    SimpleFusion, GenericFusion
+export FusionStyle, UniqueFusion, MultipleFusion, MultiplicityFreeFusion, SimpleFusion, GenericFusion
+export UnitStyle, SimpleUnit, GenericUnit
 export BraidingStyle, SymmetricBraiding, Bosonic, Fermionic, Anyonic, NoBraiding
 export Trivial, Z2Irrep, Z3Irrep, Z4Irrep, ZNIrrep, U1Irrep, SU2Irrep, CU1Irrep
 export ProductSector
 export FermionParity, FermionNumber, FermionSpin
 export FibonacciAnyon, IsingAnyon
 
+# Export common vector space, fusion tree and tensor types
 export VectorSpace, Field, ElementarySpace # abstract vector spaces
 export InnerProductStyle, NoInnerProduct, HasInnerProduct, EuclideanInnerProduct
 export ComplexSpace, CartesianSpace, GeneralSpace, GradedSpace # concrete spaces
@@ -30,18 +31,19 @@ export DiagonalTensorMap, BraidingTensor
 export TruncationScheme
 export SpaceMismatch, SectorMismatch, IndexError # error types
 
-# general vector space methods
-export space, field, dual, dim, reduceddim, dims, fuse, flip, isdual, oplus, ominus,
-    insertleftunit, insertrightunit, removeunit
-
-# partial order for vector spaces
+# Export general vector space methods
+export space, field, dual, dim, reduceddim, dims, fuse, flip, isdual
+export unitspace, zerospace, oplus, ominus
+export insertleftunit, insertrightunit, removeunit
 export infimum, supremum, isisomorphic, ismonomorphic, isepimorphic
 
-# methods for sectors and properties thereof
-export sectortype, sectors, hassector, Nsymbol, Fsymbol, Rsymbol, Bsymbol,
-    frobeniusschur, twist, otimes, sectorscalartype, deligneproduct
+# Reexport methods for sectors and properties thereof
+export sectortype, sectors, hassector
+export unit, rightunit, leftunit, allunits, isunit, otimes
+export Nsymbol, Fsymbol, Rsymbol, Bsymbol, frobenius_schur_phase, frobenius_schur_indicator, twist, sectorscalartype, deligneproduct
+
+# Export methods for fusion trees
 export fusiontrees, braid, permute, transpose
-export ZNSpace, SU2Irrep, U1Irrep, CU1Irrep
 # other fusion tree manipulations, should not be exported:
 # export insertat, split, merge, repartition, artin_braid,
 #        bendleft, bendright, foldleft, foldright, cycleclockwise, cycleanticlockwise
@@ -52,9 +54,9 @@ export ℤ₂, ℤ₃, ℤ₄, U₁, SU, SU₂, CU₁
 export fℤ₂, fU₁, fSU₂
 export ℤ₂Space, ℤ₃Space, ℤ₄Space, U₁Space, CU₁Space, SU₂Space
 
-# tensor maps
+# Export tensor map methods
 export domain, codomain, numind, numout, numin, domainind, codomainind, allind
-export spacetype, sectortype, storagetype, scalartype, tensormaptype
+export spacetype, storagetype, scalartype, tensormaptype
 export blocksectors, blockdim, block, blocks
 
 # random methods for constructor

@@ -47,9 +47,8 @@ hassector(V::CartesianSpace, ::Trivial) = dim(V) != 0
 sectors(V::CartesianSpace) = OneOrNoneIterator(dim(V) != 0, Trivial())
 sectortype(::Type{CartesianSpace}) = Trivial
 
-Base.oneunit(::Type{CartesianSpace}) = CartesianSpace(1)
-Base.zero(::Type{CartesianSpace}) = CartesianSpace(0)
-
+unitspace(::Type{CartesianSpace}) = CartesianSpace(1)
+zerospace(::Type{CartesianSpace}) = CartesianSpace(0)
 ⊕(V₁::CartesianSpace, V₂::CartesianSpace) = CartesianSpace(V₁.d + V₂.d)
 function ⊖(V::CartesianSpace, W::CartesianSpace)
     V ≿ W || throw(ArgumentError("$(W) is not a subspace of $(V)"))

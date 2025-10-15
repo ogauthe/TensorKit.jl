@@ -3,7 +3,8 @@ using TestExtras
 using Random
 using TensorKit
 using Combinatorics
-using TensorKit: ProductSector, fusiontensor, pentagon_equation, hexagon_equation
+using TensorKit: ProductSector, fusiontensor
+using TensorKitSectors: TensorKitSectors
 using TensorOperations
 using Base.Iterators: take, product
 # using SUNRepresentations: SUNIrrep
@@ -33,14 +34,14 @@ end
 function randsector(::Type{I}) where {I <: Sector}
     s = collect(smallset(I))
     a = rand(s)
-    while a == one(a) # don't use trivial label
+    while isunit(a) # don't use trivial label
         a = rand(s)
     end
     return a
 end
 function hasfusiontensor(I::Type{<:Sector})
     try
-        fusiontensor(one(I), one(I), one(I))
+        fusiontensor(unit(I), unit(I), unit(I))
         return true
     catch e
         if e isa MethodError

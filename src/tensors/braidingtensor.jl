@@ -366,7 +366,7 @@ end
 #         rmul!(C, β)
 #     end
 #     I = sectortype(B)
-#     u = one(I)
+#     u = unit(I)
 #     f₀ = FusionTree{I}((), u, (), (), ())
 #     braidingtensor_levels = A.adjoint ? (1, 2, 2, 1) : (2, 1, 1, 2)
 #     inv_braid = braidingtensor_levels[cindA[2]] > braidingtensor_levels[cindA[3]]
@@ -385,10 +385,10 @@ end
 #                 f₁′′.innerlines[1] == u || continue
 #                 coeff = coeff′ * coeff′′ * sqrtdim(a) * sqrtdim(b)
 #                 if f₁′′.isdual[1]
-#                     coeff *= frobeniusschur(a)
+#                     coeff *= frobenius_schur_phase(a)
 #                 end
 #                 if f₁′′.isdual[3]
-#                     coeff *= frobeniusschur(b)
+#                     coeff *= frobenius_schur_phase(b)
 #                 end
 #                 f12 = (f₀, f₂′)
 #                 if @isdefined newtrees
@@ -434,7 +434,7 @@ end
 #         rmul!(C, β)
 #     end
 #     I = sectortype(B)
-#     u = one(I)
+#     u = unit(I)
 #     f₀ = FusionTree{I}((), u, (), (), ())
 #     braidingtensor_levels = B.adjoint ? (1, 2, 2, 1) : (2, 1, 1, 2)
 #     inv_braid = braidingtensor_levels[cindB[2]] > braidingtensor_levels[cindB[3]]
@@ -453,10 +453,10 @@ end
 #                 f₂′′.innerlines[1] == u || continue
 #                 coeff = coeff′ * conj(coeff′′ * sqrtdim(a) * sqrtdim(b))
 #                 if f₂′′.isdual[1]
-#                     coeff *= conj(frobeniusschur(a))
+#                     coeff *= conj(frobenius_schur_phase(a))
 #                 end
 #                 if f₂′′.isdual[3]
-#                     coeff *= conj(frobeniusschur(b))
+#                     coeff *= conj(frobenius_schur_phase(b))
 #                 end
 #                 f12 = (f₁′, f₀)
 #                 if @isdefined newtrees
@@ -501,7 +501,7 @@ end
 #         rmul!(C, β)
 #     end
 #     I = sectortype(B)
-#     u = one(I)
+#     u = unit(I)
 #     braidingtensor_levels = A.adjoint ? (1, 2, 2, 1) : (2, 1, 1, 2)
 #     inv_braid = braidingtensor_levels[cindA[2]] > braidingtensor_levels[cindA[3]]
 #     for (f₁, f₂) in fusiontrees(B)
@@ -517,7 +517,7 @@ end
 #                 f₁′′.innerlines[1] == u || continue
 #                 coeff = coeff′ * coeff′′ * sqrtdim(a)
 #                 if f₁′′.isdual[1]
-#                     coeff *= frobeniusschur(a)
+#                     coeff *= frobenius_schur_phase(a)
 #                 end
 #                 f₁′′′ = FusionTree{I}((b,), b, (f₁′′.isdual[3],), (), ())
 #                 f12 = (f₁′′′, f₂′)
@@ -563,7 +563,7 @@ end
 #         rmul!(C, β)
 #     end
 #     I = sectortype(B)
-#     u = one(I)
+#     u = unit(I)
 #     braidingtensor_levels = B.adjoint ? (1, 2, 2, 1) : (2, 1, 1, 2)
 #     inv_braid = braidingtensor_levels[cindB[2]] > braidingtensor_levels[cindB[3]]
 #     for (f₁, f₂) in fusiontrees(A)
@@ -579,7 +579,7 @@ end
 #                 f₂′′.innerlines[1] == u || continue
 #                 coeff = coeff′ * conj(coeff′′ * sqrtdim(a))
 #                 if f₂′′.isdual[1]
-#                     coeff *= conj(frobeniusschur(a))
+#                     coeff *= conj(frobenius_schur_phase(a))
 #                 end
 #                 f₂′′′ = FusionTree{I}((b,), b, (f₂′′.isdual[3],), (), ())
 #                 f12 = (f₁′, f₂′′′)
