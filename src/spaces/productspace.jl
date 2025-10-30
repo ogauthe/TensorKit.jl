@@ -48,11 +48,14 @@ end
 
 # Corresponding methods
 #-----------------------
-"""
+@doc """
     dims(::ProductSpace{S, N}) -> Dims{N} = NTuple{N, Int}
+    dims(V::HomSpace) -> Dims{length(V)}
+    dims(t::AbstractTensorMap) -> Dims{numind(t)}
 
-Return the dimensions of the spaces in the tensor product space as a tuple of integers.
-"""
+Return the dimensions of the spaces in the tensor product space(s) as a tuple of integers.
+""" dims
+
 dims(P::ProductSpace) = map(dim, P.spaces)
 dim(P::ProductSpace, n::Int) = dim(P.spaces[n])
 dim(P::ProductSpace) = prod(dims(P))
@@ -68,10 +71,11 @@ dual(P::ProductSpace) = ProductSpace(map(dual, reverse(P.spaces)))
 function Base.show(io::IO, P::ProductSpace{S}) where {S <: ElementarySpace}
     spaces = P.spaces
     if length(spaces) == 0
-        print(io, "ProductSpace{", S, ", 0}")
+        print(io, "one(", type_repr(S), ")")
+        return nothing
     end
     if length(spaces) == 1
-        print(io, "ProductSpace")
+        print(io, "⊗")
     end
     print(io, "(")
     for i in 1:length(spaces)
