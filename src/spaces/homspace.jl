@@ -93,11 +93,16 @@ function blocksectors(W::HomSpace)
     N₁ = length(codom)
     N₂ = length(dom)
     I = sectortype(W)
-    # TODO: is sort! still necessary now that blocksectors of ProductSpace is sorted?
-    if N₂ <= N₁
-        return sort!(filter!(c -> hasblock(codom, c), blocksectors(dom)))
+    if N₁ == N₂ == 0
+        return allunits(I)
+    elseif N₁ == 0
+        return filter!(isunit, collect(blocksectors(dom))) # module space cannot end in empty space
+    elseif N₂ == 0
+        return filter!(isunit, collect(blocksectors(codom)))
+    elseif N₂ <= N₁
+        return filter!(c -> hasblock(codom, c), collect(blocksectors(dom)))
     else
-        return sort!(filter!(c -> hasblock(dom, c), blocksectors(codom)))
+        return filter!(c -> hasblock(dom, c), collect(blocksectors(codom)))
     end
 end
 
@@ -227,7 +232,7 @@ function TensorOperations.tensorcontract(
 end
 
 """
-    insertleftunit(W::HomSpace, i=numind(W) + 1; conj=false, dual=false)
+    insertleftunit(W::HomSpace, i = numind(W) + 1; conj = false, dual = false)
 
 Insert a trivial vector space, isomorphic to the underlying field, at position `i`,
 which can be specified as an `Int` or as `Val(i)` for improved type stability.
@@ -237,7 +242,8 @@ See also [`insertrightunit`](@ref insertrightunit(::HomSpace, ::Val{i}) where {i
 [`removeunit`](@ref removeunit(::HomSpace, ::Val{i}) where {i}).
 """
 function insertleftunit(
-        W::HomSpace, ::Val{i} = Val(numind(W) + 1); conj::Bool = false, dual::Bool = false
+        W::HomSpace, ::Val{i} = Val(numind(W) + 1);
+        conj::Bool = false, dual::Bool = false
     ) where {i}
     if i ≤ numout(W)
         return insertleftunit(codomain(W), Val(i); conj, dual) ← domain(W)
@@ -247,7 +253,7 @@ function insertleftunit(
 end
 
 """
-    insertrightunit(W::HomSpace, i=numind(W); conj=false, dual=false)
+    insertrightunit(W::HomSpace, i = numind(W); conj = false, dual = false)
 
 Insert a trivial vector space, isomorphic to the underlying field, after position `i`,
 which can be specified as an `Int` or as `Val(i)` for improved type stability.
@@ -257,7 +263,8 @@ See also [`insertleftunit`](@ref insertleftunit(::HomSpace, ::Val{i}) where {i})
 [`removeunit`](@ref removeunit(::HomSpace, ::Val{i}) where {i}).
 """
 function insertrightunit(
-        W::HomSpace, ::Val{i} = Val(numind(W)); conj::Bool = false, dual::Bool = false
+        W::HomSpace, ::Val{i} = Val(numind(W));
+        conj::Bool = false, dual::Bool = false
     ) where {i}
     if i ≤ numout(W)
         return insertrightunit(codomain(W), Val(i); conj, dual) ← domain(W)
