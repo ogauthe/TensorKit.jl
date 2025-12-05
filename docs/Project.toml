@@ -10,4 +10,9 @@ WignerSymbols = "9f57e263-0b3d-5e2e-b1be-24f2bb48858b"
 
 [compat]
 Documenter = "1"
+DocumenterInterLinks = "1"
+LinearAlgebra = "1"
 Random = "1"
+SUNRepresentations = "0.3"
+Test = "1"
+WignerSymbols = "1,2"
