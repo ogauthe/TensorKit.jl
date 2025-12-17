@@ -6,14 +6,13 @@ function TO.tensorstructure(t::AbstractTensorMap, iA::Int, conjA::Bool)
 end
 
 function TO.tensoralloc(
-        ::Type{TT}, structure::TensorMapSpace{S, N₁, N₂},
-        istemp::Val, allocator = TO.DefaultAllocator()
-    ) where {T, S, N₁, N₂, TT <: AbstractTensorMap{T, S, N₁, N₂}}
+        ::Type{TT}, structure::TensorMapSpace, istemp::Val, allocator = TO.DefaultAllocator()
+    ) where {TT <: AbstractTensorMap}
     A = storagetype(TT)
     dim = fusionblockstructure(structure).totaldim
     data = TO.tensoralloc(A, dim, istemp, allocator)
-    # return TT(data, structure)
-    return TensorMap{T}(data, structure)
+    TT′ = tensormaptype(spacetype(structure), numout(structure), numin(structure), typeof(data))
+    return TT′(data, structure)
 end
 
 function TO.tensorfree!(t::TensorMap, allocator = TO.DefaultAllocator())
@@ -156,10 +155,14 @@ function TO.tensorcontract_type(
     ) where {N₁, N₂}
     spacetype(A) == spacetype(B) || throw(SpaceMismatch("incompatible space types"))
     I = sectortype(A)
-    M = similarstoragetype(A, sectorscalartype(I) <: Real ? TC : complex(TC))
-    MB = similarstoragetype(B, sectorscalartype(I) <: Real ? TC : complex(TC))
-    M == MB || throw(ArgumentError("incompatible storage types:\n$(M) ≠ $(MB)"))
+    TC′ = isreal(I) ? TC : complex(TC)
+    M = promote_storagetype(similarstoragetype(A, TC′), similarstoragetype(B, TC′))
     return tensormaptype(spacetype(A), N₁, N₂, M)
+end
+
+# TODO: handle actual promotion rule system
+function promote_storagetype(::Type{M₁}, ::Type{M₂}) where {M₁, M₂}
+    return M₁ === M₂ ? M₁ : throw(ArgumentError("Cannot determine storage type for combining `$M₁` and `$M₂`"))
 end
 
 function TO.tensorcontract_structure(
