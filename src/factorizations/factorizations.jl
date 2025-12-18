@@ -12,7 +12,7 @@ using ..TensorKit: AdjointTensorMap, SectorDict, SectorVector,
 
 using LinearAlgebra: LinearAlgebra, BlasFloat, Diagonal,
     svdvals, svdvals!, eigen, eigen!,
-    isposdef, isposdef!, ishermitian
+    isposdef, isposdef!
 
 using TensorOperations: Index2Tuple
 
@@ -37,10 +37,10 @@ TensorKit.one!(A::AbstractMatrix) = MatrixAlgebraKit.one!(A)
 #------------------------------#
 
 function LinearAlgebra.eigen(t::AbstractTensorMap; kwargs...)
-    return ishermitian(t) ? eigh_full(t; kwargs...) : eig_full(t; kwargs...)
+    return LinearAlgebra.ishermitian(t) ? eigh_full(t; kwargs...) : eig_full(t; kwargs...)
 end
 function LinearAlgebra.eigen!(t::AbstractTensorMap; kwargs...)
-    return ishermitian(t) ? eigh_full!(t; kwargs...) : eig_full!(t; kwargs...)
+    return LinearAlgebra.ishermitian(t) ? eigh_full!(t; kwargs...) : eig_full!(t; kwargs...)
 end
 
 function LinearAlgebra.eigvals(t::AbstractTensorMap; kwargs...)
@@ -48,6 +48,11 @@ function LinearAlgebra.eigvals(t::AbstractTensorMap; kwargs...)
     return LinearAlgebra.eigvals!(tcopy; kwargs...)
 end
 LinearAlgebra.eigvals!(t::AbstractTensorMap; kwargs...) = eig_vals!(t)
+
+LinearAlgebra.svd(t::AbstractTensorMap; full::Bool = false) =
+    full ? svd_full(t) : svd_compact(t)
+LinearAlgebra.svd!(t::AbstractTensorMap; full::Bool = false) =
+    full ? svd_full!(t) : svd_compact!(t)
 
 function LinearAlgebra.svdvals(t::AbstractTensorMap)
     tcopy = copy_oftype(t, factorisation_scalartype(svd_vals!, t))
