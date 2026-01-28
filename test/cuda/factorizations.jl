@@ -229,17 +229,17 @@ for V in spacelist
                 @test isisometric(N)
                 @test norm(N' * t) ≈ 0 atol = 100 * eps(norm(t))
 
-                #N = @constinferred left_null(t; trunc = (; atol = 100 * eps(norm(t))))
-                #@test isisometric(N)
-                #@test norm(N' * t) ≈ 0 atol = 100 * eps(norm(t))
+                N = @constinferred left_null(t; trunc = (; atol = 100 * eps(norm(t))))
+                @test isisometric(N)
+                @test norm(N' * t) ≈ 0 atol = 100 * eps(norm(t))
 
                 Nᴴ = @constinferred right_null(t; alg = :svd)
                 @test isisometric(Nᴴ; side = :right)
                 @test norm(t * Nᴴ') ≈ 0 atol = 100 * eps(norm(t))
 
-                #Nᴴ = @constinferred right_null(t; trunc = (; atol = 100 * eps(norm(t))))
-                #@test isisometric(Nᴴ; side = :right)
-                #@test norm(t * Nᴴ') ≈ 0 atol = 100 * eps(norm(t))
+                Nᴴ = @constinferred right_null(t; trunc = (; atol = 100 * eps(norm(t))))
+                @test isisometric(Nᴴ; side = :right)
+                @test norm(t * Nᴴ') ≈ 0 atol = 100 * eps(norm(t))
             end
 
             # empty tensor
@@ -258,15 +258,15 @@ for V in spacelist
             end
         end
 
-        #=@testset "truncated SVD" begin
+        @testset "truncated SVD" begin
             for T in eltypes,
                     t in (
                         CUDA.randn(T, W, W),
-                        #CUDA.randn(T, W, W)',
+                        CUDA.randn(T, W, W)',
                         CUDA.randn(T, W, V4),
                         CUDA.randn(T, V4, W),
-                        #CUDA.randn(T, W, V4)',
-                        #CUDA.randn(T, V4, W)',
+                        CUDA.randn(T, W, V4)',
+                        CUDA.randn(T, V4, W)',
                         DiagonalTensorMap(CUDA.randn(T, reduceddim(V1)), V1),
                     )
 
@@ -286,7 +286,7 @@ for V in spacelist
                 @test isisometric(U1)
                 @test isisometric(Vᴴ1; side = :right)
                 @test norm(t - U1 * S1 * Vᴴ1) ≈ ϵ1 atol = eps(real(T))^(4 / 5)
-                @test dim(domain(S1)) <= nvals
+                test_dim_isapprox(domain(S1), nvals)
 
                 λ = minimum(diagview(S1))
                 trunc = trunctol(; atol = λ - 10eps(λ))
@@ -325,9 +325,9 @@ for V in spacelist
                 @test isisometric(Vᴴ5; side = :right)
                 @test norm(t - U5 * S5 * Vᴴ5) ≈ ϵ5 atol = eps(real(T))^(4 / 5)
                 @test minimum(diagview(S5)) >= λ
-                @test dim(domain(S5)) ≤ nvals
+                test_dim_isapprox(domain(S5), nvals)
             end
-        end=# # TODO
+        end
 
         @testset "Eigenvalue decomposition" begin
             for T in eltypes,
@@ -335,7 +335,7 @@ for V in spacelist
                         CUDA.rand(T, V1, V1),
                         CUDA.rand(T, W, W),
                         CUDA.rand(T, W, W)',
-                        DiagonalTensorMap(CUDA.rand(T, reduceddim(V1)), V1),
+                        # DiagonalTensorMap(CUDA.rand(T, reduceddim(V1)), V1),
                     )
 
                 d, v = @constinferred eig_full(t)
@@ -349,10 +349,10 @@ for V in spacelist
                 @test @constinferred isposdef(vdv)
                 t isa DiagonalTensorMap || @test !isposdef(t) # unlikely for non-hermitian map
 
-                #=nvals = round(Int, dim(domain(t)) / 2)
+                nvals = round(Int, dim(domain(t)) / 2)
                 d, v = @constinferred eig_trunc(t; trunc = truncrank(nvals))
                 @test t * v ≈ v * d
-                @test dim(domain(d)) ≤ nvals=#
+                test_dim_isapprox(domain(d), nvals)
 
                 t2 = @constinferred project_hermitian(t)
                 D, V = eigen(t2)
@@ -380,10 +380,9 @@ for V in spacelist
                 @test isposdef(t2 - λ * one(t) + 0.1 * one(t2))
                 @test !isposdef(t2 - λ * one(t) - 0.1 * one(t2))
 
-                # TODO
-                #=d, v = @constinferred eigh_trunc(t2; trunc = truncrank(nvals))
+                d, v = @constinferred eigh_trunc(t2; trunc = truncrank(nvals))
                 @test t2 * v ≈ v * d
-                @test dim(domain(d)) ≤ nvals=#
+                test_dim_isapprox(domain(d), nvals)
             end
         end
 
