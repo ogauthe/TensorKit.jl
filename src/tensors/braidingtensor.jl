@@ -99,8 +99,8 @@ function _braiding_factor(f₁, f₂, inv::Bool = false)
     return r
 end
 
-@inline function Base.getindex(
-        b::BraidingTensor, f₁::FusionTree{I, 2}, f₂::FusionTree{I, 2}
+@inline function subblock(
+        b::BraidingTensor, (f₁, f₂)::Tuple{FusionTree{I, 2}, FusionTree{I, 2}}
     ) where {I <: Sector}
     I == sectortype(b) || throw(SectorMismatch())
     c = f₁.coupled
@@ -125,10 +125,6 @@ end
         end
     end
     return data
-end
-@inline function Base.getindex(b::BraidingTensor, ::Nothing, ::Nothing)
-    sectortype(b) === Trivial || throw(SectorMismatch())
-    return getindex(b)
 end
 
 # efficient copy constructor
@@ -169,7 +165,7 @@ function block(b::BraidingTensor, s::Sector)
 
     for ((f₁, f₂), (sz, str, off)) in pairs(subblockstructure(space(b)))
         (f₁.coupled == f₂.coupled == s) || continue
-        r = _braiding_factor(f₁, f₂)
+        r = _braiding_factor(f₁, f₂, b.adjoint)
         isnothing(r) && continue
         # change offset to account for single block
         subblock = StridedView(data, sz, str, off - base_offset)
