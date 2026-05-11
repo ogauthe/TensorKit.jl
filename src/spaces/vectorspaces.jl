@@ -347,6 +347,7 @@ defined. Also works in type domain.
 sectortype(x) = sectortype(typeof(x))
 sectortype(::Type{T}) where {T} = sectortype(spacetype(T))
 sectortype(::Type{S}) where {S <: Sector} = S
+sectortype(::Type{T}) where {S, T <: TensorKitSectors.SectorSet{S}} = S
 
 """
     hassector(V::VectorSpace, a::Sector) -> Bool
